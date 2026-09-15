@@ -3,20 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VidStream</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="welcome.css">
+<title>Welcome — VidStream</title>
+<style>
+/* ================= WELCOME — KOMAI A CIKI ================= */
+:root{
+  --bg:#0d0d0d; --bg3:#232323; --text:#f1f1f1; --text2:#a5a5a5;
+  --pink:#f4256d; --pink2:#ff5c9d;
+}
+body.light{ --bg:#f9f9f9; --bg3:#e6e6e6; --text:#0f0f0f; --text2:#606060; }
+*{margin:0;padding:0;box-sizing:border-box}
+
+.welcome{position:fixed;inset:0;background:var(--bg);color:var(--text);
+  font-family:'Segoe UI',system-ui,sans-serif;display:flex;align-items:center;
+  justify-content:center;overflow:hidden;transition:opacity .5s,visibility .5s}
+.welcome.gone{opacity:0;visibility:hidden}
+
+/* Pink blobs a bayanye */
+.welcome::before{content:'';position:absolute;width:620px;height:620px;border-radius:50%;
+  background:radial-gradient(circle,rgba(244,37,109,.20),transparent 70%);
+  top:-220px;right:-200px;animation:float 8s ease-in-out infinite}
+.welcome::after{content:'';position:absolute;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,92,157,.14),transparent 70%);
+  bottom:-190px;left:-170px;animation:float 10s ease-in-out infinite reverse}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(40px)}}
+
+.w-splash{display:flex;flex-direction:column;align-items:center;gap:18px;z-index:1;padding:20px}
+
+/* ---- PINK LOGO (play a ciki) ---- */
+.w-logo{width:104px;height:104px;
+  filter:drop-shadow(0 0 28px rgba(244,37,109,.55));
+  animation:logoPop .7s cubic-bezier(.2,1.4,.4,1) both,logoPulse 2.2s ease-in-out .8s infinite}
+.w-logo svg{width:100%;height:100%;display:block}
+@keyframes logoPop{from{transform:scale(0) rotate(-20deg);opacity:0}}
+@keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+
+/* ---- SUNAN APP ---- */
+.w-name{font-size:40px;font-weight:800;letter-spacing:-1px;animation:rise .6s .25s ease both}
+.w-name b{background:linear-gradient(90deg,var(--pink2),var(--pink));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.w-name span{font-weight:300;color:var(--text)}
+
+/* ---- TAGLINE (tana juyawa) ---- */
+.w-tag{color:var(--text2);font-size:15px;font-weight:500;letter-spacing:.4px;
+  min-height:22px;animation:rise .6s .4s ease both;transition:opacity .35s,transform .35s}
+.w-tag.swap{opacity:0;transform:translateY(8px)}
+@keyframes rise{from{transform:translateY(18px);opacity:0}}
+
+/* ---- COUNTDOWN RING ---- */
+.w-ring{position:relative;width:130px;height:130px;margin-top:10px;animation:rise .6s .55s ease both}
+.w-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg,.ring-fg{fill:none;stroke-width:6;stroke-linecap:round}
+.ring-bg{stroke:var(--bg3)}
+.w-count{position:absolute;inset:0;display:grid;place-items:center;
+  font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
+.w-count.tick{animation:tick .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes tick{from{transform:scale(1.45);opacity:.35}to{transform:scale(1);opacity:1}}
+
+.w-hint{color:var(--text2);font-size:13px;letter-spacing:.5px;animation:rise .6s .7s ease both}
+
+.w-version{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));
+  color:var(--text2);font-size:12px;letter-spacing:1px;z-index:1}
+</style>
 </head>
 <body>
 
 <div class="welcome" id="welcome">
-
   <div class="w-splash">
 
-    <!-- PINK LOGO (play a ciki) -->
-    <div class="w-logo" id="wLogo">
+    <!-- PINK LOGO (play a ciki — SVG, ba file daban ba) -->
+    <div class="w-logo">
       <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
@@ -30,10 +85,7 @@
       </svg>
     </div>
 
-    <!-- SUNAN APP -->
     <div class="w-name"><b>Vid</b><span>Stream</span></div>
-
-    <!-- TAGLINE (tana juyawa kanta) -->
     <div class="w-tag" id="wTag">Watch · Download · Enjoy</div>
 
     <!-- COUNTDOWN RING (5 seconds) -->
@@ -52,13 +104,98 @@
     </div>
 
     <div class="w-hint">Entering automatically…</div>
-
   </div>
 
   <div class="w-version">VidStream v1.0</div>
-
 </div>
 
-<script src="welcome.js"></script>
+<script>
+/* ================================================
+   VIDSTREAM — WELCOME (komai a ciki)
+   • Ba Skip ba • Countdown 5s • Auto-redirect
+   • Yana kai ka ../home/index.html
+================================================ */
+
+// ⬇️ Idan mun canza sunan shafin gida, ka gyara nan kawai
+const NEXT_PAGE = '../home/index.html';
+
+// ⏱️ Adadin daƙiƙoƙin kafin redirect
+const REDIRECT_AFTER = 5;
+
+/* ---------------- STORAGE ---------------- */
+const load = (k,d)=>{ try{ return JSON.parse(localStorage.getItem('vs_'+k)) ?? d; }catch{ return d; } };
+const save = (k,v)=>{ try{ localStorage.setItem('vs_'+k, JSON.stringify(v)); }catch{} };
+
+/* ---------------- THEME ---------------- */
+if(load('theme','dark') === 'light') document.body.classList.add('light');
+
+/* ---------------- TAGLINES (suna juyawa) ---------------- */
+const TAGLINES = [
+  'Watch · Download · Enjoy',
+  'Trending videos & Shorts 🔥',
+  'HD downloads up to 1080p',
+  'Fast · Smooth · Free'
+];
+let tagIdx = 0;
+setInterval(()=>{
+  const el = document.getElementById('wTag');
+  el.classList.add('swap');
+  setTimeout(()=>{
+    tagIdx = (tagIdx+1) % TAGLINES.length;
+    el.textContent = TAGLINES[tagIdx];
+    el.classList.remove('swap');
+  }, 350);
+}, 1600);
+
+/* ---------------- REDIRECT ---------------- */
+let went = false;
+function goHome(){
+  if(went) return;
+  went = true;
+  save('welcomed', true);   // ka tuna cewa ya shiga
+  document.getElementById('welcome').classList.add('gone');
+  setTimeout(()=>{ window.location.href = NEXT_PAGE; }, 500);
+}
+
+/* ---------------- COUNTDOWN (5 → 0) ---------------- */
+function startCountdown(){
+  const fg  = document.getElementById('ringFg');
+  const cnt = document.getElementById('wCount');
+  const C   = 2 * Math.PI * 54;   // circumference na ring
+  let left  = REDIRECT_AFTER;
+
+  fg.style.strokeDasharray  = C;
+  fg.style.strokeDashoffset = 0;
+  cnt.textContent = left;
+
+  // Ring na zazzaura a cikin 5s (pink gradient stroke)
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    fg.style.transition = `stroke-dashoffset ${REDIRECT_AFTER}s linear`;
+    fg.style.strokeDashoffset = C;
+  }));
+
+  // Tick kowace daƙiƙa 1
+  const timer = setInterval(()=>{
+    left--;
+    if(left <= 0){
+      clearInterval(timer);
+      cnt.textContent = '0';
+      goHome();
+      return;
+    }
+    cnt.textContent = left;
+    cnt.classList.remove('tick');
+    void cnt.offsetWidth;   // sake ƙaddamar da animation
+    cnt.classList.add('tick');
+  }, 1000);
+}
+
+/* ---------------- INIT ---------------- */
+(function init(){
+  // Idan ya riga ya ga welcome, kai shi kai tsaye (ba tare da jira ba)
+  if(load('welcomed', false)){ window.location.replace(NEXT_PAGE); return; }
+  startCountdown();
+})();
+</script>
 </body>
 </html>
