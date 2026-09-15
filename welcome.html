@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidStream</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+
+<div class="welcome" id="welcome">
+
+  <div class="w-splash">
+
+    <!-- PINK LOGO (play a ciki) -->
+    <div class="w-logo" id="wLogo">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ff5c9d"/>
+            <stop offset="55%" stop-color="#f4256d"/>
+            <stop offset="100%" stop-color="#d40f6a"/>
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="112" height="112" rx="32" fill="url(#logoGrad)"/>
+        <path d="M49 39 L85 60 L49 81 Z" fill="#ffffff"/>
+      </svg>
+    </div>
+
+    <!-- SUNAN APP -->
+    <div class="w-name"><b>Vid</b><span>Stream</span></div>
+
+    <!-- TAGLINE (tana juyawa kanta) -->
+    <div class="w-tag" id="wTag">Watch · Download · Enjoy</div>
+
+    <!-- COUNTDOWN RING (5 seconds) -->
+    <div class="w-ring">
+      <svg viewBox="0 0 120 120">
+        <defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ff5c9d"/>
+            <stop offset="100%" stop-color="#d40f6a"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="60" cy="60" r="54"/>
+        <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="54" stroke="url(#ringGrad)"/>
+      </svg>
+      <span class="w-count" id="wCount">5</span>
+    </div>
+
+    <div class="w-hint">Entering automatically…</div>
+
+  </div>
+
+  <div class="w-version">VidStream v1.0</div>
+
+</div>
+
+<script src="welcome.js"></script>
+</body>
+</html>
