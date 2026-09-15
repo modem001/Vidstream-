@@ -112,7 +112,7 @@ main{flex:1;min-width:0;padding:22px 26px 80px}
 /* ---------- TRENDING ---------- */
 .trend-row{display:flex;gap:16px;padding:14px;border-radius:16px;cursor:pointer;transition:background .2s;align-items:flex-start}
 .trend-row:hover{background:var(--bg2)}
-.rank{font-size:34px;font-weight:800;width:46px;text-align:center;color:var(--text2);line-height:1;padding-top:6px;
+.rank{font-size:34px;font-weight:800;width:46px;text-align:center;line-height:1;padding-top:6px;
   -webkit-text-stroke:1px var(--accent);color:transparent}
 .trend-thumb{width:min(360px,32vw);aspect-ratio:16/9;border-radius:12px;overflow:hidden;flex-shrink:0;position:relative;background:var(--bg3)}
 .trend-thumb img{width:100%;height:100%;object-fit:cover}
@@ -350,7 +350,7 @@ const PATHS = {
   mute:'M11 5 6 9H3v6h3l5 4zM16 9l6 6M22 9l-6 6',
   full:'M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M16 21h3a2 2 0 0 0 2-2v-3M8 21H5a2 2 0 0 1-2-2v-3',
   close:'M18 6 6 18M6 6l12 12',
-ash:'M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M18.5 6l-1 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2l-1-14',
+  trash:'M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M18.5 6l-1 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2l-1-14',
   check:'M20 6 9 17l-5-5',
   moon:'M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z',
   sun:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
@@ -391,21 +391,14 @@ const VIDEOS = [
   V('v6','Volkswagen GTI Review — Still Worth It in 2025?','AutoVerse',1,5210983,'5 months ago','9:53','Autos','vw'),
   V('v7','What Car Can You Actually Get for $1,000?','AutoVerse',1,7823451,'2 months ago','9:52','Autos','grand'),
   V('v8','We Are Going On Bullrun! (Announcement)','DriveLine',0,1204531,'3 weeks ago','0:47','Autos','bullrun'),
-  V('v9','How Sintel\'s Dragon Was Animated — Breakdown','Anim School',1,2871049,'7 months ago','14:48','Education','sintel'),
+  V('v9',"How Sintel's Dragon Was Animated — Breakdown",'Anim School',1,2871049,'7 months ago','14:48','Education','sintel'),
   V('v10','Tears of Steel — VFX Compositing Masterclass','VFX Academy',1,1982455,'1 year ago','12:14','Tech','tos'),
-  V('v11','Big Buck Bunny but it\'s Weirdly Hilarious 😂','FrameByFrame',0,6721890,'6 months ago','9:56','Comedy','bbb'),
+  V('v11',"Big Buck Bunny but it's Weirdly Hilarious 😂",'FrameByFrame',0,6721890,'6 months ago','9:56','Comedy','bbb'),
   V('v12','Elephants Dream — The Hidden Meaning Explained','Reel Decoded',1,3490122,'10 months ago','10:53','Education','ed'),
   V('v13','Every Blender Open Movie, Ranked','Reel Decoded',1,2145780,'2 months ago','12:14','Movies','tos'),
   V('v14','GTI vs The World — Hot Hatch Showdown','DriveLine',0,4412876,'4 months ago','9:53','Autos','vw'),
   V('v15','Budget Build Challenge: Street & Dirt Tests','DriveLine',0,1678234,'3 weeks ago','9:54','Autos','subaru'),
   V('v16','How Open Source Movies Are Actually Made','Anim School',1,1234567,'1 month ago','14:48','Animation','sintel'),
-];
-const SHORTS = [
-  {id:'s1',t:'When the render finally finishes 🔥',ch:'FrameByFrame',v:8213456,src:S.blazes[0],th:I('ForBiggerBlazes')},
-  {id:'s2',t:'POV: escaping the deadline ⏰',ch:'Reel Decoded',v:4451203,src:S.escapes[0],th:I('ForBiggerEscapes')},
-  {id:'s3',t:'Friday deploy energy 😂',ch:'FrameByFrame',v:12903455,src:S.fun[0],th:I('ForBiggerFun')},
-  {id:'s4',t:'Weekend joyride 🚗💨',ch:'AutoVerse',v:3345012,src:S.joy[0],th:I('ForBiggerJoyrides')},
-  {id:'s5',t:'Monday meltdown ☕',ch:'LoFi Lab',v:5678231,src:S.melt[0],th:I('ForBiggerMeltdowns')},
 ];
 const SHORTS = [
   {id:'s1',t:'When the render finally finishes 🔥',ch:'FrameByFrame',v:8213456,src:S.blazes[0],th:I('ForBiggerBlazes')},
@@ -429,6 +422,7 @@ const COMMENT_POOL = [
 const $ = s => document.querySelector(s);
 const load = (k,d) => { try{ return JSON.parse(localStorage.getItem('vs_'+k)) ?? d; }catch{ return d; } };
 const save = (k,v) => { try{ localStorage.setItem('vs_'+k, JSON.stringify(v)); }catch{} };
+if(!load('welcomed',false)){ window.location.replace('../welcome.html'); }
 const state = {
   page:'home', videoId:null, query:'', category:'All',
   downloads: load('downloads',[]),
@@ -590,7 +584,7 @@ function renderDownloads(){
     return html + `<div class="empty">${ic('download',56)}<h3>No downloads yet</h3>
       <p>Tap the download button on any video to save it for offline viewing.</p></div>`;
   }
-const row = d => {
+  const row = d => {
     const v = byId(d.vid) || {th:''};
     const pct = Math.min(100, d.rec/d.size*100);
     const isAud = d.fmt==='audio';
@@ -640,8 +634,7 @@ function startEngine(){
     if(state.page==='downloads') render();
   }, 1000);
 }
-
-/* ---------- WATCH PAGE ---------- */
+  /* ---------- WATCH PAGE ---------- */
 function commentsFor(id){
   const seed = [...id].reduce((a,c)=>a+c.charCodeAt(0),0);
   const n = 4 + seed % 3;
@@ -651,7 +644,7 @@ function commentsFor(id){
     const ch = VIDEOS[(seed+i)%VIDEOS.length].ch;
     list.push({user:ch, text:p, when:`${1+((seed+i)%13)} ${['hours','days','weeks'][i%3]} ago`, likes:(seed*i*137)%4200, key:id+':'+i});
   }
-const mine = (state.comments[id]||[]).map((c,i)=>({user:'You',text:c.text,when:'just now',likes:0,key:id+':me'+i}));
+  const mine = (state.comments[id]||[]).map((c,i)=>({user:'You',text:c.text,when:'just now',likes:0,key:id+':me'+i}));
   return [...mine,...list];
 }
 function renderWatch(){
@@ -682,25 +675,23 @@ function renderWatch(){
           </div>
         </div>
       </div>
-<h1 class="w-title">${esc(v.t)}</h1>
+      <h1 class="w-title">${esc(v.t)}</h1>
       <div class="w-actions">
         <div class="w-channel">
           <div class="avatar" style="--h:${hue(v.ch)}">${v.ch[0]}</div>
           <div><div class="w-cname">${esc(v.ch)} ${v.vf?`<span class="verified">${ic('check',13,true)}</span>`:''}</div>
           <div class="w-csubs">${fmtN(v.v/28)} subscribers</div></div>
         </div>
-        <button class="pill ${subbed?'subscribed':''}" onclick="toggleSub('${esc(v.ch).replace(/'/g,"\\'")}',this)">
+        <button class="pill ${subbed?'subscribed':''}" onclick="toggleSub('${esc(v.ch).replace(/'/g,"\\'")}')">
           ${subbed?ic('check',17):ic('heart',17)} ${subbed?'Subscribed':'Subscribe'}</button>
-        <button class="pill ${liked?'liked':''}" onclick="toggleLike('${v.id}',this)">${ic('like',17)} ${fmtN(Math.round(v.v/22)+(liked?1:0))}</button>
+        <button class="pill ${liked?'liked':''}" onclick="toggleLike('${v.id}')">${ic('like',17)} ${fmtN(Math.round(v.v/22)+(liked?1:0))}</button>
         <button class="pill" onclick="shareVideo('${v.id}')">${ic('share',17)} Share</button>
         <button class="pill dl" onclick="openModal('${v.id}')">${ic('download',17)} Download</button>
       </div>
       <div class="w-desc" id="desc" onclick="this.classList.toggle('open')">
         <div class="d-meta">${fmtN(v.v)} views · ${v.d} · #${v.cat} #vidstream</div>
-        <p>${esc(v.t)} — presented by ${esc(v.ch)}. This video is part of the ${v.cat.toLowerCase()} collection on VidStream.
-        Royalty-free sample footage courtesy of the Blender Foundation open movie project. Watch in up to 1080p,
-        download for offline playback in MP4 or MP3, adjust playback speed, and pick up where you left off —
-        your history and queue sync automatically in this session. ${ic('check',14)}</p>
+        <p>${esc(v.t)} — presented by ${esc(v.ch)}. Royalty-free sample footage courtesy of the Blender Foundation open movie project.
+        Watch in up to 1080p, download for offline playback in MP4 or MP3, and adjust playback speed.</p>
         <span class="more">Show more</span>
       </div>
       <div class="c-title">${comments.length} Comments</div>
@@ -712,7 +703,7 @@ function renderWatch(){
       <div id="cList">${comments.map(c=>commentHTML(c)).join('')}</div>
     </div>
     <div>
-<div class="rel-head"><div class="shelf-title" style="margin:0 0 12px">${ic('film',20)} Up next</div>
+      <div class="rel-head"><div class="shelf-title" style="margin:0 0 12px">${ic('film',20)} Up next</div>
         <button class="pill" style="font-size:12px;padding:7px 13px">Autoplay</button></div>
       ${rel.map(relCardHTML).join('')}
     </div>
@@ -744,7 +735,7 @@ function postComment(id){
   state.comments[id] = [{text, at:Date.now()}, ...(state.comments[id]||[])];
   save('comments', state.comments);
   inp.value='';
-$('#cList').insertAdjacentHTML('afterbegin', commentHTML({user:'You',text,when:'just now',likes:0,key:id+':me0'}));
+  $('#cList').insertAdjacentHTML('afterbegin', commentHTML({user:'You',text,when:'just now',likes:0,key:id+':me0'}));
   toast('Comment posted','check',true);
 }
 function toggleSub(ch){
@@ -763,7 +754,7 @@ function shareVideo(id){
   const url = location.href.split('#')[0] + '#watch=' + id;
   (navigator.clipboard?.writeText(url) || Promise.reject()).then(
     ()=>toast('Link copied to clipboard','share',true),
-    ()=>toast('Share link: '+url.slice(0,40)+'…','share'));
+    ()=>toast('Share link ready','share'));
 }
 
 /* ---------- VIDEO PLAYER ---------- */
@@ -775,7 +766,7 @@ function setupPlayer(){
         btnPlay=$('#btnPlay'), btnMute=$('#btnMute'), vol=$('#vol'), volWrap=$('#volWrap'),
         btnFull=$('#btnFull'), btnSpeed=$('#btnSpeed'), speedMenu=$('#speedMenu'), player=$('#player');
 
-const showPlay = ()=>{ bigPlay.classList.remove('hide'); btnPlay.innerHTML=icFill('play',22); };
+  const showPlay = ()=>{ bigPlay.classList.remove('hide'); btnPlay.innerHTML=icFill('play',22); };
   const showPause = ()=>{ bigPlay.classList.add('hide'); btnPlay.innerHTML=icFill('pause',22); };
   const toggle = ()=> video.paused ? video.play() : video.pause();
   bigPlay.onclick = toggle;
@@ -805,7 +796,7 @@ const showPlay = ()=>{ bigPlay.classList.remove('hide'); btnPlay.innerHTML=icFil
   volWrap.parentElement.addEventListener('mouseenter', ()=>volWrap.classList.add('open'));
   volWrap.parentElement.addEventListener('mouseleave', ()=>volWrap.classList.remove('open'));
 
-btnFull.onclick = ()=>{ document.fullscreenElement ? document.exitFullscreen() : player.requestFullscreen?.(); };
+  btnFull.onclick = ()=>{ document.fullscreenElement ? document.exitFullscreen() : player.requestFullscreen?.(); };
   btnSpeed.onclick = e=>{ e.stopPropagation(); speedMenu.classList.toggle('open'); };
   speedMenu.querySelectorAll('button').forEach(b=> b.onclick = ()=>{
     video.playbackRate = +b.dataset.sp;
@@ -820,17 +811,8 @@ btnFull.onclick = ()=>{ document.fullscreenElement ? document.exitFullscreen() :
   player.addEventListener('mousemove', poke);
   player.addEventListener('mouseleave', ()=>{ if(!video.paused) ctrls.classList.add('hide'); });
   video.addEventListener('play', poke);
-  video.addEventListener('ended', ()=>{ showPlay(); ctrls.classList.remove('hide');
-    toast('Up next: '+ (VIDEOS.filter(x=>x.id!==state.videoId)[0]||{}).t?.slice(0,30)+'…','film'); });
+  video.addEventListener('ended', ()=>{ showPlay(); ctrls.classList.remove('hide'); });
   volIcon();
-}
-
-/* ---------- SHORTS ---------- */
-function playShort(id){
-  const s = SHORTS.find(x=>x.id===id);
-  const v = { ...byId('v11'), id:'short_'+s.id, t:s.t, ch:s.ch, v:s.v, src:s.src, th:s.th, dur:'0:15', vf:0 };
-  VIDEOS.push(v);
-  openWatch('short_'+s.id);
 }
 
 /* ---------- SHORTS ---------- */
@@ -864,7 +846,7 @@ function drawModal(){
       <div><h3>${esc(v.t)}</h3><p>${esc(v.ch)} · ${v.dur} · ${fmtN(v.v)} views</p></div>
       <button class="icon-btn m-close" onclick="closeModal()">${ic('close',20)}</button>
     </div>
-<div class="m-tabs">
+    <div class="m-tabs">
       <button class="m-tab ${dlTab==='video'?'active':''}" onclick="dlTab='video';drawModal()">${ic('film',17)} Video MP4</button>
       <button class="m-tab ${dlTab==='audio'?'active':''}" onclick="dlTab='audio';drawModal()">${ic('music',17)} Audio MP3</button>
     </div>
