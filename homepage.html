@@ -1188,6 +1188,25 @@ function render(){
 applyTheme();
 render();
 loadSupabaseVideos();
+  loadSupabaseVideos();
+
+  // Manna sabuwar lambar download a nan:
+  async function downloadVideo(videoId) {
+    alert('Ana ciro hanyar sauke bidiyon, dakata kaɗan...');
+
+    try {
+      const res = await fetch(`/api/download?videoId=${videoId}`);
+      const data = await res.json();
+
+      if (data.downloadUrl) {
+        window.location.href = data.downloadUrl;
+      } else {
+        alert('An kasa ciro mahaɗin sauke bidiyon.');
+      }
+    } catch (err) {
+      alert('An samu matsala wajen gudanar da download.');
+    }
+  }
 </script>
 </body>
 </html>
