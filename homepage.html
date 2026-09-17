@@ -1033,30 +1033,116 @@ function drawModal(){
         </div>`; }).join('')}
     </div>`;
 }
-function startDownload(did, vid, fmt, q, size){
-  const exists = state.downloads.find(d=>d.id===did);
-  if(exists && exists.status==='done'){ toast('Already downloaded ✔','check',true); return; }
-  if(exists && exists.status!=='done'){ toast('Already in download queue','info'); return; }
+async function startDownload(did, vid, fmt, q, size) {
   const v = byId(vid);
-  state.downloads.unshift({ id:did, vid, title:v.t, ch:v.ch, dur:v.dur, fmt, q,
-    size, rec:0, sp:1.2+Math.random()*5, status:'downloading', at:Date.now() });
-  save('downloads', state.downloads);
-  startEngine();
+  if (!v) return toast('Ba a samu bidiyon ba', 'info');
+
+  const youtubeUrl = v.youtubeUrl || v.src || `https://www.youtube.com/watch?v=${v.youtubeId || v.id}`;
+
   closeModal();
-  toast(`Downloading “${v.t.slice(0,28)}…” (${q})`,'download');
-  renderNav();
-  if(state.page==='downloads') render();
+  toast(`Ana shiryawa da ciro MP4 din "${v.t.slice(0, 20)}..."`, 'download');
+
+  const dlItem = {
+    id: did,
+    vid: vid,
+    title: v.t,
+    ch: v.ch,
+    dur: v.dur,
+    fmt: fmt,
+    q: q,
+    size: size,
+    rec: 0,
+    sp: 1.2,
+    status: 'downloading',
+    at: Date.now()
+  };
+  
+  state.downloads.unshift(dlItem);
+  save('downloads', state.downloads);
+  refreshDlView();
+
+  try {
+    const res = await fetch(`/api/download?url=${encodeURIComponent(youtubeUrl)}&quality=${q}&format=${fmt}`);
+    const data = await res.json();
+
+    if (data && data.downloadUrl) {
+      const link = document.createElement('a');
+      link.href = data.downloadUrl;
+      link.setAttribute('download', `${v.t}.${fmt === 'audio' ? 'mp3' : 'mp4'}`);
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      dlItem.status = 'done';
+      dlItem.rec = size;
+      save('downloads', state.downloads);
+      refreshDlView();
+
+      toast('Sauke bidiyo ya fara nasara! ✔', 'check', true);
+    } else {
+      dlItem.status = 'error';
+      save('downloads', state.downloads);
+      refreshDlView();
+      toast(data.error || 'An kasa samo hanyar sauke bidiyon nan', 'close');
+    }
+  } catch (err) {
+    console.error('Download error:', err);
+    dlItem.status = 'error';
+    save('downloads', state.downloads);
+    refreshDlView();
+    toast('Matsala ta faru wajen sauke bidiyo', 'close');
+  }
 }
 function closeModal(){ $('#modalOv').classList.remove('show'); modalVideo=null; }
  $('#modalOv').addEventListener('click', e=>{ if(e.target.id==='modalOv') closeModal(); });
 
 /* ---------- SEARCH ---------- */
 const sInput = $('#searchInput'), sSuggest = $('#suggest');
-function doSearch(){
+async function doSearch() {
   const q = sInput.value.trim();
   sSuggest.classList.remove('open');
-  if(!q) return;
-  go('results',{query:q});
+  if (!q) return;
+
+  go('results', { query: q });
+  toast(`Ana binciken YouTube don "${q}"...`, 'info');
+
+  try {
+    const response = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const data = await response.json();
+
+    if (data && data.items && data.items.length > 0) {
+      data.items.forEach(item => {
+        const ytId = item.id?.videoId || item.id;
+        if (ytId && typeof ytId === 'string') {
+          if (!VIDEOS.some(v => v.youtubeId === ytId || v.id === ytId)) {
+            VIDEOS.push({
+              id: ytId,
+              dbId: ytId,
+              youtubeId: ytId,
+              t: item.snippet?.title || 'Untitled Video',
+              ch: item.snippet?.channelTitle || 'YouTube Channel',
+              vf: '100K',
+              v: 0,
+              d: 'YouTube',
+              dur: 'HD',
+              cat: 'Search Result',
+              src: `https://www.youtube.com/watch?v=${ytId}`,
+              th: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`,
+              youtubeUrl: `https://www.youtube.com/watch?v=${ytId}`
+            });
+          }
+        }
+      });
+      render();
+      toast(`An samo bidiyoyi daga YouTube!`, 'check', true);
+    } else {
+      toast('Babu sakamakon da aka samu a YouTube', 'close');
+    }
+  } catch (err) {
+    console.error('Search error:', err);
+    toast('Kuskure ya faru wajen binciken YouTube', 'close');
+  }
 }
 sInput.addEventListener('input', ()=>{
   const q = sInput.value.trim().toLowerCase();
