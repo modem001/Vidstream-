@@ -113,6 +113,34 @@ main{flex:1;min-width:0;padding:22px 26px 80px}
 .thumb {
   width: 100% !important;
 }
+  /* GYARA NA MUSAMMAN DOMIN WAYA (VidMate Style) */
+@media (max-width: 768px) {
+  /* Boye sidebar a allon waya */
+  .sidebar {
+    display: none !important;
+  }
+
+  /* Faɗaɗa babban sashen zuwa 100% */
+  main {
+    padding: 10px 8px 80px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Tilasta bidiyoyi su cika faɗin waya */
+  .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 16px !important;
+  }
+
+  .card, .thumb, .thumb img {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
 /* ---------- SHELVES ---------- */
 .shelf-title{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;margin:26px 0 14px}
 .shelf-title .ic{color:var(--accent)}
