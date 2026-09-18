@@ -1266,5 +1266,299 @@ render();
 loadSupabaseVideos();
 
 </script>
+  
+<!-- ==========================================
+     VIDSTREAM PWA INSTALL POPUP
+========================================== -->
+
+<style>
+  #vidstream-install-popup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: rgba(0, 0, 0, 0.70);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+
+  .vidstream-install-card {
+    position: relative;
+    width: 100%;
+    max-width: 390px;
+    background: #ffffff;
+    color: #111111;
+    border-radius: 24px;
+    padding: 30px 24px 24px;
+    text-align: center;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+    animation: vidstreamPopupAnimation 0.3s ease;
+  }
+
+  @keyframes vidstreamPopupAnimation {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .vidstream-close-button {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: #f1f1f1;
+    color: #555;
+    font-size: 21px;
+    cursor: pointer;
+  }
+
+  .vidstream-app-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 22px;
+    object-fit: cover;
+    margin: 8px auto 15px;
+    display: block;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+  }
+
+  .vidstream-install-card h2 {
+    margin: 5px 0 10px;
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  .vidstream-install-card p {
+    margin: 0 auto 22px;
+    max-width: 310px;
+    color: #666;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .vidstream-install-button {
+    width: 100%;
+    padding: 15px 18px;
+    border: none;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #ff2d7d, #e60063);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 14px rgba(230, 0, 99, 0.25);
+  }
+
+  .vidstream-install-button:active {
+    transform: scale(0.98);
+  }
+
+  .vidstream-later-button {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: #777;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .vidstream-install-note {
+    margin-top: 16px;
+    font-size: 11px;
+    color: #999;
+  }
+</style>
+
+
+<!-- INSTALL POPUP -->
+<div id="vidstream-install-popup">
+
+  <div class="vidstream-install-card">
+
+    <!-- Close Button -->
+    <button
+      type="button"
+      class="vidstream-close-button"
+      id="vidstream-close-button"
+      aria-label="Close">
+      ×
+    </button>
+
+    <!-- Real VidStream Application Icon -->
+    <img
+      src="/icon-192.png"
+      alt="VidStream App"
+      class="vidstream-app-icon"
+      onerror="this.src='/icon-512.png';">
+
+    <h2>Install VidStream App</h2>
+
+    <p>
+      Enjoy faster access, video downloads, and more amazing features.
+      Install VidStream on your phone today!
+    </p>
+
+    <!-- Install Button -->
+    <button
+      type="button"
+      class="vidstream-install-button"
+      id="vidstream-install-button">
+      Install VidStream App
+    </button>
+
+    <!-- Maybe Later -->
+    <button
+      type="button"
+      class="vidstream-later-button"
+      id="vidstream-later-button">
+      Maybe Later
+    </button>
+
+    <div class="vidstream-install-note">
+      Fast access • Easy installation • VidStream
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+  // ==========================================
+  // VIDSTREAM PWA INSTALL SYSTEM
+  // ==========================================
+
+  let vidstreamDeferredPrompt = null;
+
+  const vidstreamPopup =
+    document.getElementById("vidstream-install-popup");
+
+  const vidstreamInstallButton =
+    document.getElementById("vidstream-install-button");
+
+  const vidstreamLaterButton =
+    document.getElementById("vidstream-later-button");
+
+  const vidstreamCloseButton =
+    document.getElementById("vidstream-close-button");
+
+
+  // Detect when browser allows PWA installation
+  window.addEventListener("beforeinstallprompt", (event) => {
+
+    // Prevent the browser's default mini-infobar
+    event.preventDefault();
+
+    // Save the installation event
+    vidstreamDeferredPrompt = event;
+
+    // Check if user already dismissed the popup
+    const dismissed =
+      localStorage.getItem("vidstream-install-dismissed");
+
+    // Do not show popup if app is already installed
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    if (dismissed === "true" || isStandalone) {
+      return;
+    }
+
+    // Show popup after 2 seconds
+    setTimeout(() => {
+      if (vidstreamDeferredPrompt) {
+        vidstreamPopup.style.display = "flex";
+      }
+    }, 2000);
+
+  });
+
+
+  // Install Application
+  vidstreamInstallButton.addEventListener("click", async () => {
+
+    if (!vidstreamDeferredPrompt) {
+      alert(
+        "Install is not available yet. Open this website in Chrome and try again."
+      );
+      return;
+    }
+
+    // Show native installation prompt
+    vidstreamDeferredPrompt.prompt();
+
+    // Wait for user's choice
+    const result =
+      await vidstreamDeferredPrompt.userChoice;
+
+    if (result.outcome === "accepted") {
+
+      console.log("VidStream installation accepted.");
+
+      vidstreamPopup.style.display = "none";
+
+    } else {
+
+      console.log("VidStream installation dismissed.");
+
+    }
+
+    // The prompt can only be used once
+    vidstreamDeferredPrompt = null;
+
+  });
+
+
+  // Maybe Later Button
+  vidstreamLaterButton.addEventListener("click", () => {
+
+    vidstreamPopup.style.display = "none";
+
+    localStorage.setItem(
+      "vidstream-install-dismissed",
+      "true"
+    );
+
+  });
+
+
+  // Close Button
+  vidstreamCloseButton.addEventListener("click", () => {
+
+    vidstreamPopup.style.display = "none";
+
+    localStorage.setItem(
+      "vidstream-install-dismissed",
+      "true"
+    );
+
+  });
+
+
+  // Detect successful installation
+  window.addEventListener("appinstalled", () => {
+
+    console.log("VidStream app installed successfully.");
+
+    vidstreamPopup.style.display = "none";
+
+    vidstreamDeferredPrompt = null;
+
+  });
+</script>
 </body>
 </html>
