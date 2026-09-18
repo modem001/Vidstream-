@@ -861,6 +861,30 @@ function renderDownloads(){
   if(done.length) html += `<div class="dl-section">Completed</div>` + done.map(row).join('');
   return html;
 }
+  async function startDownload(videoUrl, videoTitle) {
+  try {
+    alert("Ana shirya bidiyonka don saukewa...");
+    
+    const response = await fetch(`/api/download?url=${encodeURIComponent(videoUrl)}`);
+    const data = await response.json();
+
+    if (data.downloadUrl) {
+      // Samar da maballin fake don tilasta waya ta fara download
+      const link = document.createElement('a');
+      link.href = data.downloadUrl;
+      link.setAttribute('download', `${videoTitle}.mp4`);
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else {
+      alert("Akwai matsala wajen samun link din bidiyon.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Kuskure ya faru wajen gudanar da download.");
+  }
+  }
 function removeDl(id){ state.downloads = state.downloads.filter(d=>d.id!==id); save('downloads',state.downloads); refreshDlView(); toast('Removed from downloads','trash'); }
 function pauseDl(id){ const d = state.downloads.find(d=>d.id===id); if(d){ d.status='paused'; save('downloads',state.downloads); refreshDlView(); } }
 function resumeDl(id){ const d = state.downloads.find(d=>d.id===id); if(d){ d.status='downloading'; d.sp=1.2+Math.random()*5; save('downloads',state.downloads); startEngine(); refreshDlView(); } }
