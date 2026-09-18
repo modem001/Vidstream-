@@ -1465,10 +1465,41 @@ loadSupabaseVideos();
     };
 
     const showPopup = () => {
-      if (!isInstalled() && localStorage.getItem('vidstream-install-dismissed') !== 'true') {
-        popup.style.display = 'flex';
-      }
-    };
+  const popup = document.getElementById(
+    'vidstream-install-popup'
+  );
+
+  if (!popup) {
+    console.error('VidStream popup not found');
+    return;
+  }
+
+  popup.removeAttribute('hidden');
+
+  popup.style.setProperty(
+    'display',
+    'flex',
+    'important'
+  );
+
+  popup.style.setProperty(
+    'visibility',
+    'visible',
+    'important'
+  );
+
+  popup.style.setProperty(
+    'opacity',
+    '1',
+    'important'
+  );
+
+  popup.style.setProperty(
+    'z-index',
+    '999999',
+    'important'
+  );
+};
 
     // Capture Chrome's native PWA installation event.
     window.addEventListener('beforeinstallprompt', (event) => {
