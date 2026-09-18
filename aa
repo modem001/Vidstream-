@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Icon Generator — VidStream</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#0d0d0d;color:#f1f1f1;text-align:center;padding:30px 16px}
+h1{font-size:22px}p{color:#a5a5a5;font-size:14px}
+.row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:22px 0}
+.ic{text-align:center}
+.ic canvas{width:110px;height:110px;border-radius:22px;box-shadow:0 10px 30px rgba(244,37,109,.4)}
+.ic span{display:block;font-size:12px;color:#a5a5a5;margin:8px 0}
+button{padding:12px 22px;border-radius:12px;border:none;font-weight:800;font-size:14px;color:#fff;
+ background:linear-gradient(135deg,#ff5c9d,#f4256d);cursor:pointer;margin:6px}
+</style>
+</head>
+<body>
+<h1>🩷 VidStream Icon Generator</h1>
+<p>Danna "Sauke Duka" — zai sauke PNG 3 a cikin folder <b>icons/</b> na repo ɗinka</p>
+<div class="row" id="prev"></div>
+<button onclick="dl('icon-192.png',192,false)">⬇️ icon-192</button>
+<button onclick="dl('icon-512.png',512,false)">⬇️ icon-512</button>
+<button onclick="dl('icon-maskable-512.png',512,true)">⬇️ icon-maskable-512</button>
+<button onclick="dlAll()">📦 Sauke Duka (3)</button>
+<script>
+function rr(x,px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);
+ x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath()}
+function draw(size,maskable){
+ const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');
+ const g=x.createLinearGradient(0,0,size,size);
+ g.addColorStop(0,'#ff5c9d');g.addColorStop(.55,'#f4256d');g.addColorStop(1,'#d40f6a');
+ if(maskable){
+  x.fillStyle=g;x.fillRect(0,0,size,size);
+  const w=size*0.30;x.fillStyle='#fff';x.beginPath();
+  x.moveTo(size/2-w/2,size/2-w*0.55);x.lineTo(size/2+w/2,size/2);x.lineTo(size/2-w/2,size/2+w*0.55);
+  x.closePath();x.fill();
+ }else{
+  rr(x,0,0,size,size,size*0.24);x.fillStyle=g;x.fill();
+  const w=size*0.30;x.fillStyle='#fff';x.beginPath();
+  x.moveTo(size/2-w/2+size*0.02,size/2-w*0.55);x.lineTo(size/2+w/2+size*0.02,size/2);
+  x.lineTo(size/2-w/2+size*0.02,size/2+w*0.55);x.closePath();x.fill();
+ }
+ return c;
+}
+// preview
+[['192',192,false],['512',512,false],['maskable',512,true]].forEach(([n,s,m])=>{
+ const w=document.createElement('div');w.className='ic';
+ const c=draw(s,m);w.appendChild(c);
+ const sp=document.createElement('span');sp.textContent=n;w.appendChild(sp);
+ document.getElementById('prev').appendChild(w);
+});
+function dl(name,size,maskable){
+ const a=document.createElement('a');a.download=name;a.href=draw(size,maskable).toDataURL('image/png');a.click();
+}
+function dlAll(){dl('icon-192.png',192,false);setTimeout(()=>dl('icon-512.png',512,false),300);
+ setTimeout(()=>dl('icon-maskable-512.png',512,true),600);}
+</script>
+</body>
+</html>
