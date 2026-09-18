@@ -1477,13 +1477,27 @@ loadSupabaseVideos();
       setTimeout(showPopup, 1500);
     });
 
-    // Show the popup even if the browser does not expose the event yet.
-    // The Install button will provide instructions in that case.
-    window.addEventListener('load', () => {
-      if (!isInstalled() && localStorage.getItem('vidstream-install-dismissed') !== 'true') {
-        setTimeout(showPopup, 2000);
-      }
-    });
+    // Show VidStream install popup
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const popup = document.getElementById(
+      'vidstream-install-popup'
+    );
+
+    if (
+      popup &&
+      !isInstalled() &&
+      localStorage.getItem(
+        'vidstream-install-dismissed'
+      ) !== 'true'
+    ) {
+      popup.style.display = 'flex';
+      popup.style.visibility = 'visible';
+      popup.style.opacity = '1';
+      popup.style.zIndex = '999999';
+    }
+  }, 2000);
+});
 
     installButton.addEventListener('click', async () => {
       if (!deferredPrompt) {
