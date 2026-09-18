@@ -1,11 +1,12 @@
 export default async function handler(req, res) {
-  const { videoId } = req.query;
+  const { url } = req.query;
 
-  if (!videoId) {
-    return res.status(400).json({ error: 'Sanya videoId' });
+  if (!url) {
+    return res.status(400).json({ error: 'Sanya mahaɗin bidiyo (URL missing)' });
   }
 
   try {
+    // Amfani da Cobalt API wajen ciro direct MP4 URL
     const response = await fetch('https://api.cobalt.tools/api/json', {
       method: 'POST',
       headers: {
@@ -13,19 +14,19 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        url: `https://www.youtube.com/watch?v=${videoId}`,
+        url: url,
         videoQuality: '720'
       })
     });
 
     const data = await response.json();
 
-    if (data && data.url) {
+    if (data.url) {
       return res.status(200).json({ downloadUrl: data.url });
     } else {
-      return res.status(500).json({ error: 'An kasa samun download link' });
+      return res.status(400).json({ error: 'Cannot download video' });
     }
   } catch (error) {
-    return res.status(500).json({ error: 'Kuskure wajen ciro bidiyo' });
+    return res.status(500).json({ error: 'Uwar gudu (Server error) ta faru' });
   }
 }
